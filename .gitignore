@@ -1,0 +1,38 @@
+# ==========================================
+# Entornos virtuales
+# ==========================================
+.venv/
+venv/
+env/
+
+# ==========================================
+# Archivos de caché y compilación de Python
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ==========================================
+# Variables de entorno y secretos
+# ==========================================
+.env
+.env.local
+
+# ==========================================
+# Datos y Modelos (¡NO SUBIR A REPOSITORIOS!)
+# ==========================================
+data/
+models/
+
+# ==========================================
+# Archivos del Sistema Operativo
+# ==========================================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# ==========================================
+# Jupyter Notebooks (Puntos de control)
+# ==========================================
+.ipynb_checkpoints
