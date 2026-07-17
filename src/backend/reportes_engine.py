@@ -52,10 +52,10 @@ def generar_pdf_bytes(df: pd.DataFrame, nombre_turno: str, umbral_alerta: float)
                     pass 
             
             # Encabezados y Metadatos
-            fig_sum.text(text_x_offset, 0.90, "Reporte de Turno — Monitor de Dolor XAI-EEG", fontsize=18, fontweight='bold', color='black')
+            fig_sum.text(text_x_offset, 0.90, "Reporte de Turno — Monitor de Dolor ", fontsize=18, fontweight='bold', color='black')
             fecha_generacion = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             fig_sum.text(text_x_offset, 0.83, f"Generado: {fecha_generacion} · Archivo: {nombre_turno}", fontsize=11, color='black')
-            fig_sum.text(text_x_offset, 0.77, "Herramienta de apoyo a la decision clinica. No reemplaza el juicio profesional ni constituye un diagnostico.", fontsize=11, style='italic', color='black')
+            
             
             # Título de la tabla de resumen
             fig_sum.text(0.1, 0.65, "Resumen del turno", fontsize=16, fontweight='bold', color='black')

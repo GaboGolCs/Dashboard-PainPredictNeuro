@@ -53,7 +53,11 @@ def render(idx, tensor, modelo_eeg, resultado_eeg, ch_names, info):
                 st.caption("**Ventana temporal crítica**")
                 df_tiempo = pd.DataFrame({"Importancia": xai_ext.gradcam_ventana_temporal}, index=eje_ms)
                 st.line_chart(df_tiempo, height=250)
-            st.pyplot(ui_components.dibujar_gradcam_heatmap(xai_ext.gradcam_canal_tiempo, ch_names), use_container_width=True)
+            
+            # FILA NUEVA: Columnas [25% vacío, 50% gráfico, 25% vacío] para centrar el mapa de calor
+            col_izq, col_centro, col_der = st.columns([1, 2, 1])
+            with col_centro:
+                st.pyplot(ui_components.dibujar_gradcam_heatmap(xai_ext.gradcam_canal_tiempo, ch_names), use_container_width=True)
 
     with st.container(border=True):
         st.markdown("#### 🧩 LIME-EEG (Aproximación local)")

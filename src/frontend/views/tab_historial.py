@@ -19,7 +19,7 @@ def render(idx, es_fif, pi, resultado_eeg, cuerpo_pred, cerebro_pred, paciente_n
     with col_nota2:
         if st.button("Anotar Evento", use_container_width=True) and anotacion:
             st.session_state.anotaciones[idx] = st.session_state.anotaciones.get(idx, "") + f" | {anotacion}"
-            st.toast(f"✅ Anotación guardada: {anotacion}", icon="✅")
+            st.toast(f" Anotación guardada: {anotacion}", icon="✅")
 
     st.markdown("**2. Registrar medicación**")
     col_m1, col_m2, col_m3, col_m4 = st.columns([2, 2, 1, 1])
@@ -35,7 +35,7 @@ def render(idx, es_fif, pi, resultado_eeg, cuerpo_pred, cerebro_pred, paciente_n
             if farmaco and dosis > 0:
                 texto_registro = f"💊 Medicación: {farmaco} - {dosis} {unidad}"
                 st.session_state.anotaciones[idx] = st.session_state.anotaciones.get(idx, "") + f" | {texto_registro}"
-                st.toast(f"✅ Registrado: {farmaco}", icon="✅")
+                st.toast(f" Registrado: {farmaco}", icon="✅")
             else:
                 st.error("Ingrese fármaco y dosis válida.")
     
@@ -64,7 +64,7 @@ def render(idx, es_fif, pi, resultado_eeg, cuerpo_pred, cerebro_pred, paciente_n
         with rep_c1:
             st.download_button("⬇️ Descargar .CSV", data=reportes_engine.generar_csv_bytes(df_hist), file_name=f"{nombre_pdf_dinamico}.csv", mime="text/csv")
         with rep_c2:
-            st.download_button("⬇️ Descargar Firmado .PDF", data=reportes_engine.generar_pdf_bytes(df_hist, nombre_turno=nombre_pdf_dinamico, umbral_alerta=session.get_umbral_alerta()), file_name=f"{nombre_pdf_dinamico}.pdf", mime="application/pdf")
+            st.download_button("⬇️ Descargar  .PDF", data=reportes_engine.generar_pdf_bytes(df_hist, nombre_turno=nombre_pdf_dinamico, umbral_alerta=session.get_umbral_alerta()), file_name=f"{nombre_pdf_dinamico}.pdf", mime="application/pdf")
 
         st.markdown("---")
         if st.button("🗑️ Limpiar Historial", key="btn_clear_hist"):
