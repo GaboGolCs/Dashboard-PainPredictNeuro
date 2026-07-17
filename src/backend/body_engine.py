@@ -19,7 +19,8 @@ import pandas as pd
 import shap
 import xgboost as xgb
 from lime.lime_tabular import LimeTabularExplainer
-
+import numpy as np
+import random
 from src import config
 
 logger = config.get_logger(__name__)
@@ -155,27 +156,42 @@ def crear_explicador_lime(predictor: PredictorCorporal) -> LimeTabularExplainer:
         class_names=[MAPA_DOLOR_CUERPO[i] for i in range(5)],
         mode="classification",
         discretize_continuous=True,
+        random_state=42  # <--- AÑADIDO: Fija la aleatoriedad en la inicialización
     )
-
 
 def explicar_con_lime(predictor: PredictorCorporal, explainer: LimeTabularExplainer,
                       fila_paciente: pd.DataFrame, clase: int,
-                      num_features: int = 5, num_samples: int = 500) -> list[dict]:
-    """Explicación local LIME para UNA fila de biomarcadores.
-
-    A diferencia de SHAP (TreeExplainer, cálculo exacto y rápido),
-    LIME perturba `num_samples` muestras sintéticas alrededor de la
-    fila y ajusta un modelo lineal local — es más lento, por eso
-    `num_samples` se mantiene bajo (500) para uso interactivo, y en
-    el frontend se calcula bajo demanda (botón), no automáticamente
-    en cada época.
-    """
+                      num_features: int = 5, num_samples: int = 500, 
+                      seed: int = 42) -> list[dict]:  # <-- ESTA ES LA LÍNEA QUE FALTABA
+    """Explicación local LIME para UNA fila de biomarcadores."""
     fila = fila_paciente[predictor.features]
 
     def predict_fn(x: np.ndarray) -> np.ndarray:
-        # LIME entrega arrays numpy sin nombres de columna; se los
-        # devolvemos como DataFrame para que XGBoost use el orden correcto.
         return predictor.modelo.predict_proba(pd.DataFrame(x, columns=predictor.features))
+
+    import numpy as np
+    explainer.random_state = np.random.RandomState(seed)
+
+    explicacion = explainer.explain_instance(
+        fila.values[0], predict_fn,
+        num_features=num_features, num_samples=num_samples,
+        labels=[clase],
+    )
+    pares = explicacion.as_list(label=clase)
+    return [{"biomarcador": desc, "peso_lime": round(float(peso), 4)} for desc, peso in pares]
+def explicar_con_lime(predictor: PredictorCorporal, explainer: LimeTabularExplainer,
+                      fila_paciente: pd.DataFrame, clase: int,
+                      num_features: int = 5, num_samples: int = 500, 
+                      seed: int = 42) -> list[dict]:
+    """Explicación local LIME para UNA fila de biomarcadores."""
+    fila = fila_paciente[predictor.features]
+
+    def predict_fn(x: np.ndarray) -> np.ndarray:
+        return predictor.modelo.predict_proba(pd.DataFrame(x, columns=predictor.features))
+
+    np.random.seed(seed)
+    random.seed(seed)
+    explainer.random_state = np.random.RandomState(seed)
 
     explicacion = explainer.explain_instance(
         fila.values[0], predict_fn,

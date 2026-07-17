@@ -47,9 +47,22 @@ def render(idx, has_fusion, resultado_cuerpo, prob_fus, predictor_cuerpo):
             st.caption("**LIME Corporal (Perturbación Local)**")
             if st.button("Calcular LIME (Cuerpo)", disabled=session.is_playing(), key="btn_cuerpo_lime"):
                 with st.spinner("Calculando vecindarios locales..."):
+                    import numpy as np
+                    
                     lime_explainer = resources.get_lime_explainer()
-                    fila_cuerpo = body_engine.fila_por_clase(predictor_cuerpo, resultado_cuerpo.clase)
-                    top_lime = body_engine.explicar_con_lime(predictor_cuerpo, lime_explainer, fila_cuerpo, resultado_cuerpo.clase)
+                    
+                    # 1. Fijamos el paciente usando idx
+                    rng_fijo = np.random.default_rng(idx)
+                    fila_cuerpo = body_engine.fila_por_clase(predictor_cuerpo, resultado_cuerpo.clase, rng=rng_fijo)
+                    
+                    # 2. Pasamos el idx como semilla a LIME
+                    top_lime = body_engine.explicar_con_lime(
+                        predictor_cuerpo, 
+                        lime_explainer, 
+                        fila_cuerpo, 
+                        resultado_cuerpo.clase,
+                        seed=idx  # <-- Pasamos la semilla aquí
+                    )
                 session.set_resultado_cacheado("lime_cuerpo", idx, top_lime)
 
             top_lime_cache = session.get_resultado_cacheado("lime_cuerpo", idx)
