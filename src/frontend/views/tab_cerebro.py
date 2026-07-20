@@ -7,6 +7,9 @@ from src.frontend import session, ui_components
 from src.backend import eeg_engine
 
 def render(idx, tensor, modelo_eeg, resultado_eeg, ch_names, info):
+    # Importamos el diccionario aquí adentro para evitar problemas de caché
+    from src.frontend import diccionario_explicaciones as dicc
+    
     st.markdown("### 🧠 Métricas y Modelado Avanzado de EEG")
     col1, col2 = st.columns([1, 1])
     with col1:
@@ -22,7 +25,7 @@ def render(idx, tensor, modelo_eeg, resultado_eeg, ch_names, info):
         st.success(explicacion_texto)
         
         electrodo_dom = ch_names[int(np.argmax(resultado_eeg.pesos_electrodo))]
-        st.metric("Electrodo dominante", electrodo_dom)
+        st.metric("Electrodo dominante", electrodo_dom, help=dicc.TOOLTIPS["electrodo_dom"])
     with col2:
         st.pyplot(ui_components.dibujar_topomap(resultado_eeg.pesos_electrodo, info), use_container_width=True)
 
@@ -36,7 +39,9 @@ def render(idx, tensor, modelo_eeg, resultado_eeg, ch_names, info):
         st.line_chart(df_raw, height=250)
 
     with st.container(border=True):
-        st.markdown("#### 🧬 SHAP + Grad-CAM (EEG)")
+        # NUEVO ENFOQUE: st.subheader genera un título limpio con un ícono de tooltip nativo (?)
+        st.subheader("🧬 SHAP + Grad-CAM (EEG)", help=f"{dicc.TOOLTIPS['shap_eeg']} \n\n {dicc.TOOLTIPS['gradcam']}")
+        
         if st.button("Calcular SHAP + Grad-CAM", disabled=session.is_playing(), key="btn_eeg_shap"):
             with st.spinner("Calculando GradientShap y Grad-CAM..."):
                 session.set_resultado_cacheado("xai_ext_eeg", idx, eeg_engine.calcular_xai_extendido(tensor, modelo_eeg))
@@ -54,13 +59,14 @@ def render(idx, tensor, modelo_eeg, resultado_eeg, ch_names, info):
                 df_tiempo = pd.DataFrame({"Importancia": xai_ext.gradcam_ventana_temporal}, index=eje_ms)
                 st.line_chart(df_tiempo, height=250)
             
-            # FILA NUEVA: Columnas [25% vacío, 50% gráfico, 25% vacío] para centrar el mapa de calor
             col_izq, col_centro, col_der = st.columns([1, 2, 1])
             with col_centro:
                 st.pyplot(ui_components.dibujar_gradcam_heatmap(xai_ext.gradcam_canal_tiempo, ch_names), use_container_width=True)
 
     with st.container(border=True):
-        st.markdown("#### 🧩 LIME-EEG (Aproximación local)")
+        # NUEVO ENFOQUE: Tooltip nativo para LIME
+        st.subheader("🧩 LIME-EEG (Aproximación local)", help=dicc.TOOLTIPS['lime_eeg'])
+        
         if st.button("Calcular LIME-EEG", key="btn_eeg_lime", disabled=session.is_playing()):
             with st.spinner("Ocluyendo electrodos..."):
                 session.set_resultado_cacheado("lime_eeg", idx, eeg_engine.calcular_lime_eeg(tensor, modelo_eeg))

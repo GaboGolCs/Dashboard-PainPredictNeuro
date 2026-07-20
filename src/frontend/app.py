@@ -9,6 +9,7 @@ import sys
 import time
 from pathlib import Path
 
+
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(_PROJECT_ROOT) not in sys.path: sys.path.insert(0, str(_PROJECT_ROOT))
 
@@ -21,7 +22,7 @@ from src import config
 from src.backend import body_engine, eeg_engine
 from src.frontend import resources, session, ui_components
 from src.frontend.views import tab_resumen, tab_cerebro, tab_cuerpo, tab_historial, tab_datasets
-
+from src.frontend import diccionario_explicaciones as dicc
 mne.set_log_level("ERROR")
 st.set_page_config(page_title="Monitor de Dolor — XAI", layout="wide")
 session.init_session_state()
@@ -64,7 +65,7 @@ with st.sidebar:
         st.warning("⚠️ Complete Nombre, Edad, Peso y Sexo.")
 
     st.markdown("---")
-    umbral_alerta = st.slider("Umbral de alerta", 0.0, 10.0, session.get_umbral_alerta(), step=0.5)
+    umbral_alerta = st.slider("Umbral de alerta", 0.0, 10.0, session.get_umbral_alerta(), step=0.5, help=dicc.TOOLTIPS["umbral_alerta"])
     session.set_umbral_alerta(umbral_alerta)
 
 st.title("🧠 Monitor de Dolor en Tiempo Real (XAI)")
@@ -104,7 +105,7 @@ if es_fif:
         with cp2:
             if st.button("⏸ Pausar", use_container_width=True, disabled=not session.is_playing()): session.set_playing(False); st.rerun()
         
-        intervalo_seg = st.slider("Segundos entre épocas", 0.5, 5.0, 2.0, step=0.5)
+        intervalo_seg = st.slider("Segundos entre épocas", 0.5, 5.0, 2.0, step=0.5, help=dicc.TOOLTIPS["intervalo_reproduccion"])
         st.markdown(f"<div style='text-align: center;'><b>Época en análisis:</b> {idx} / {max(n_epocas - 1, 0)}</div>", unsafe_allow_html=True)
 
     tensor = eeg_engine.epoca_a_tensor(epochs, idx)

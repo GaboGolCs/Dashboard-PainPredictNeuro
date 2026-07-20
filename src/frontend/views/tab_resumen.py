@@ -3,6 +3,7 @@ import numpy as np
 from src import config
 from src.frontend import session, ui_components
 from src.backend import body_engine, narrativa_engine
+from src.frontend import diccionario_explicaciones as dicc
 
 def render(idx, has_fusion, clase_real, label_evento, predictor_cuerpo, fuser, prob_cerebro, cerebro_pred, resultado_eeg, ch_names):
     pi, prob_fus, cuerpo_pred, resultado_cuerpo = None, None, "N/A", None
@@ -24,7 +25,7 @@ def render(idx, has_fusion, clase_real, label_evento, predictor_cuerpo, fuser, p
             prob_cuerpo = resultado_cuerpo.probabilidades
                 
         with ctrl2:
-            peso_cerebro = st.slider("Peso del cerebro (%) vs Cuerpo", 0, 100, 50, step=5, key="slider_resumen_peso")
+            peso_cerebro = st.slider("Peso del cerebro (%) vs Cuerpo", 0, 100, 50, step=5, key="slider_resumen_peso", help=dicc.TOOLTIPS["peso_fusion"])
             
         w_b, w_c = peso_cerebro / 100.0, 1.0 - (peso_cerebro / 100.0)
         pi, prob_fus = fuser.calcular_pain_index(prob_cuerpo, prob_cerebro, w_cuerpo=w_c, w_cerebro=w_b)

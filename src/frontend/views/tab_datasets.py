@@ -5,6 +5,7 @@ from src import config
 def render(info, n_epocas, es_fif, has_fusion, predictor_cuerpo):
     st.markdown("### 📁 Gestión y Diagnóstico de Datos")
     st.caption("Exploración de los datos subyacentes.")
+    st.info("💡 **Transparencia XAI:** Esta sección expone los datos crudos con los que las IAs fueron entrenadas. Un desbalance extremo en las clases o una correlación errónea en los biomarcadores podría sesgar los modelos.")
     
     st.header("🧠 Datos del Cerebro (EEG)")
     with st.container(border=True):

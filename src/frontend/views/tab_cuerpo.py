@@ -3,6 +3,7 @@ import pandas as pd
 from src import config
 from src.frontend import session, resources, ui_components
 from src.backend import body_engine
+from src.frontend import diccionario_explicaciones as dicc
 
 def render(idx, has_fusion, resultado_cuerpo, prob_fus, predictor_cuerpo):
     st.markdown("### 🫀 Análisis Detallado del Modelo Corporal (Biomarcadores)")
@@ -39,12 +40,12 @@ def render(idx, has_fusion, resultado_cuerpo, prob_fus, predictor_cuerpo):
         exp_shap, exp_lime = st.columns(2)
         
         with exp_shap:
-            st.caption("**SHAP (Atribución Global)**")
+            st.caption(f"**SHAP (Atribución Global)**", help=dicc.TOOLTIPS["shap_cuerpo"])
             df_shap = pd.DataFrame(resultado_cuerpo.top_drivers).set_index("biomarcador")
             st.bar_chart(df_shap, height=220)
             
         with exp_lime:
-            st.caption("**LIME Corporal (Perturbación Local)**")
+            st.caption(f"**LIME Corporal (Perturbación Local)**", help=dicc.TOOLTIPS["lime_cuerpo"])
             if st.button("Calcular LIME (Cuerpo)", disabled=session.is_playing(), key="btn_cuerpo_lime"):
                 with st.spinner("Calculando vecindarios locales..."):
                     import numpy as np

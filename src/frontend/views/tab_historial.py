@@ -2,9 +2,12 @@ import streamlit as st
 from datetime import datetime
 from src.frontend import session
 from src.backend import reportes_engine
+from src.frontend import diccionario_explicaciones as dicc
 
 def render(idx, es_fif, pi, resultado_eeg, cuerpo_pred, cerebro_pred, paciente_nombre, paciente_sexo, paciente_edad, nombre_archivo):
     st.markdown("### 📈 Registro Histórico de la Sesión Actual")
+    with st.expander("ℹ️ ¿Cómo usar el Historial Clínico?"):
+        st.write("Registra la administración de analgésicos o eventos médicos en la sección inferior. Estos quedarán indexados a la época actual del EEG, permitiendo auditar si la intervención tuvo un impacto real en la reducción del *Pain Index*.")
     session.registrar_entrada(
         archivo=nombre_archivo, epoca=idx if es_fif else -1, pain_index=pi,
         nivel_eeg=resultado_eeg.nivel_dolor, confianza_eeg=resultado_eeg.confianza,
